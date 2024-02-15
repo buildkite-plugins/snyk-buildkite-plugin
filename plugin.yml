@@ -1,14 +1,27 @@
-name: Buildkite Plugin
-description: Exceptional functionality
+name: Snyk
+description: Run Snyk tests in your Buildkite pipelines
 author: https://github.com/buildkite-plugins
+public: true
 requirements:
   - bash
+  - snyk
 configuration:
   properties:
-    mandatory:
+    token-env:
       type: string
-    optional:
+    org:
       type: string
+    image:
+      type: string
+    scan:
+      enum:
+        - 'code'
+        - 'container'
+        - 'oss'
+    annotate:
+      type: bool
+    block:
+      type: bool
   required:
-    - mandatory
+    - scan
   additionalProperties: false

@@ -1,6 +1,6 @@
-# Template Buildkite Plugin [![Build status](https://badge.buildkite.com/d673030645c7f3e7e397affddd97cfe9f93a40547ed17b6dc5.svg)](https://buildkite.com/buildkite/plugins-template)
+# Snyk Buildkite Plugin
 
-A Buildkite plugin for something awesome
+A Buildkite plugin that runs [Snyk](https://snyk.io) tests in your Buildkite pipelines
 
 ## Options
 
@@ -8,45 +8,86 @@ These are all the options available to configure this plugin's behaviour.
 
 ### Required
 
-#### `mandatory` (string)
+#### `scan` (string)
 
-A great description of what this is supposed to do.
+The type of scan that the plugin will perform. Currently supported options are `oss`, `code`, `container`. (default: `oss`)
 
 ### Optional
 
-#### `optional` (string)
+#### `token-env` (string)
+The environment variable the plugin will reference to set `SNYK_TOKEN`. (default: `SNYK_TOKEN`)
 
-Describe how the plugin behaviour changes if this option is not specified, allowed values and its default.
+#### `org` (string)
+Your Snyk Organization slug, sets `SNYK_CFG_ORG`.
+
+#### `image` (string)
+The image and tag (example: `alpine:latest`) to pass to the container scan tool.
+
+#### `annotate` (bool)
+Annotate the build according to the scan results, default: FALSE
+
+#### `block` (bool)
+Optionally block the build on vulnerability detection
+
 
 ## Examples
 
-Show how your plugin is to be used
+Here are a few examples of using the plugin to scan within your Buildkite pipeline
 
 ```yaml
 steps:
-  - label: "🔨 Running plugin"
-    command: "echo template plugin"
+  - label: "🔎 Scanning with Snyk"
     plugins:
-      - template#v1.0.0:
-          mandatory: "value"
+      - snyk#v0.0.1:
+          scan: 'oss'
+          annotate: true
+
 ```
 
 ## And with other options as well
 
-If you want to change the plugin behaviour:
+```yaml
+steps:
+  - label: "🔎 Scanning code with Snyk"
+    plugins:
+      - snyk#v0.0.1:
+          scan: 'code'
+          annotate: true
+```
+
+
+Scanning a docker container image by image name and tag:
 
 ```yaml
 steps:
-  - label: "🔨 Running plugin"
-    command: "echo template plugin with options"
+  - label: "🔎 Scanning container image with Snyk"
     plugins:
-      - template#v1.0.0:
-          mandatory: "value"
-          optional: "example"
+      - snyk#v0.0.1:
+          scan: 'container'
+          annotate: true
+          image: 'alpine:latest'
+
+```
+
+Block a build when a vulnerability is detected:
+
+```yaml
+steps:
+  - label: "🔎 Blocking snyk scan"
+    plugins:
+      - snyk#v0.0.1:
+          scan: 'oss'
+          annotate: true
+          block: true
 ```
 
 ## ⚒ Developing
 
+### Tests
+
+Run the tests using `docker compose run --rm tests`
+
+### Running the pipeline
 You can use the [bk cli](https://github.com/buildkite/cli) to run the [pipeline](.buildkite/pipeline.yml) locally:
 
 ```bash
