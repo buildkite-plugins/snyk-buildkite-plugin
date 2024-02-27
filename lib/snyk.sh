@@ -145,7 +145,7 @@ function annotate_build() {
     
     annotation=$(
     cat << EOF
-    Snyk Scan completed, see the <a href="artifact://${html_artifact}">uploaded results</a>
+    <pre>Snyk Scan completed, see the <a href="artifact://${html_artifact}">uploaded results</a></pre>
 EOF
 )
    
