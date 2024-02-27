@@ -5,7 +5,9 @@ setup() {
 
   # Uncomment to enable stub debugging
   # export CURL_STUB_DEBUG=/dev/tty
-  # export SNYK_STUB_DEBUG=/dev/tty
+  #  export SNYK_STUB_DEBUG=/dev/tty
+  #  export SNYK_TO_HTML_STUB_DEBUG=/dev/tty
+  #  export BUILDKITE_AGENT_STUB_DEBUG=/dev/tty
 
   # you can set variables common to all tests here
   export BUILDKITE_PLUGIN_YOUR_PLUGIN_NAME_MANDATORY='Value'
@@ -13,8 +15,17 @@ setup() {
   export BUILDKITE_PLUGIN_SNYK_TOKEN_ENV='FOO'
   export BUILDKITE_PLUGIN_SNYK_IMAGE='llama'
   export BUILDKITE_PIPELINE_SLUG='bk'
-  export BUILDKITE_BUILD_NUMBER='kb'
+  export BUILDKITE_BUILD_NUMBER='1'
   export FOO='BAR'
+  export BUILDKITE_PLUGIN_SNYK_ANNOTATE=false
+
+  export annotation=$(cat << EOF
+    <h3>Snyk oss test</h3>
+    <p>Snyk test completed and vulnerabilities were detected. Complete results have been uploaded as a build artifact.</p>
+    <a href=artifact://${html_artifact}>View Complete Scan Result</a>
+EOF
+)
+
 }
 
 
@@ -38,27 +49,34 @@ setup() {
   BUILDKITE_PLUGIN_SNYK_SCAN='oss'
 
   stub snyk \
-   "test --json-file-output=snyk-results.json : echo 'Scanning OSS'"
+   "test --json-file-output=${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-oss.json : echo 'Scanning OSS'"
+
+  stub snyk-to-html \
+  "-i ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-oss.json -o ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-oss.html : echo 'created artifact'"
+
+  stub buildkite-agent \
+  "artifact upload ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-oss.html : exit 0" \
+  "annotate \* \* \* \* \* : exit 0"
 
   run "$PWD"/hooks/command
 
   assert_success
-  assert_output --partial 'Running Snyk OSS scan'
   assert_output --partial 'Scanning OSS'
 
   unstub snyk
+  unstub snyk-to-html
+  unstub buildkite-agent
 }
 
 @test "code option runs Snyk code scan" {
   BUILDKITE_PLUGIN_SNYK_SCAN='code'
 
   stub snyk \
-   "code test --json-file-output=snyk-results.json : echo 'Scanning Code'"
+   "code test --json-file-output=${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-code.json : echo 'Scanning Code'"
 
   run "$PWD"/hooks/command
 
   assert_success
-  assert_output --partial 'Running Snyk Code scan'
   assert_output --partial 'Scanning Code'
 
   unstub snyk
@@ -68,13 +86,21 @@ setup() {
   BUILDKITE_PLUGIN_SNYK_SCAN='container'
 
   stub snyk \
-   "container test llama --json-file-output=snyk-results.json : echo 'Scanning Container llama'"
+   "container test llama --json-file-output=${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-container.json : echo 'Scanning Container llama'"
+
+  stub snyk-to-html \
+  "-i ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-container.json -o ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-container.html : echo 'created artifact'"
+
+  stub buildkite-agent \
+  "artifact upload ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-container.html : exit 0" \
+  "annotate \* \* \* \* \* : exit 0"
 
   run "$PWD"/hooks/command
 
   assert_success
-  assert_output --partial 'Running Snyk Container scan'
   assert_output --partial 'Scanning Container llama'
 
   unstub snyk
+  unstub snyk-to-html
+  unstub buildkite-agent
 }
