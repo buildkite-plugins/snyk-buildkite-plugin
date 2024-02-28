@@ -18,14 +18,6 @@ setup() {
   export BUILDKITE_BUILD_NUMBER='1'
   export FOO='BAR'
   export BUILDKITE_PLUGIN_SNYK_ANNOTATE=false
-
-  export annotation=$(cat << EOF
-    <h3>Snyk oss test</h3>
-    <p>Snyk test completed and vulnerabilities were detected. Complete results have been uploaded as a build artifact.</p>
-    <a href=artifact://${html_artifact}>View Complete Scan Result</a>
-EOF
-)
-
 }
 
 
