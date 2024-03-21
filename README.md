@@ -1,3 +1,6 @@
+
+[![Build status](https://badge.buildkite.com/1d5cd674308d9572db45ebcb52aec5a32fd38b6763c3705b42.svg)](https://buildkite.com/buildkite/plugins-snyk)
+
 # Snyk Buildkite Plugin
 
 A Buildkite plugin that runs [Snyk](https://snyk.io) tests in your Buildkite pipelines
@@ -38,7 +41,7 @@ Here are a few examples of using the plugin to scan within your Buildkite pipeli
 steps:
   - label: "🔎 Scanning with Snyk"
     plugins:
-      - snyk#v0.0.1:
+      - snyk#v0.1.0:
           scan: 'oss'
           annotate: true
 
@@ -50,7 +53,7 @@ steps:
 steps:
   - label: "🔎 Scanning code with Snyk"
     plugins:
-      - snyk#v0.0.1:
+      - snyk#v0.1.0:
           scan: 'code'
           annotate: true
 ```
@@ -62,7 +65,7 @@ Scanning a docker container image by image name and tag:
 steps:
   - label: "🔎 Scanning container image with Snyk"
     plugins:
-      - snyk#v0.0.1:
+      - snyk#v0.1.0:
           scan: 'container'
           annotate: true
           image: 'alpine:latest'
@@ -75,7 +78,7 @@ Block a build when a vulnerability is detected:
 steps:
   - label: "🔎 Blocking snyk scan"
     plugins:
-      - snyk#v0.0.1:
+      - snyk#v0.1.0:
           scan: 'oss'
           annotate: true
           block: true
