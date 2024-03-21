@@ -14,14 +14,11 @@ configuration:
     image:
       type: string
     scan:
-      enum:
-        - 'code'
-        - 'container'
-        - 'oss'
+      enum: [ "code", "container", "oss" ]
     annotate:
-      type: bool
+      type: boolean
     block:
-      type: bool
+      type: boolean
   required:
     - scan
   additionalProperties: false
