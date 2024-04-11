@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+
+DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+# shellcheck source=lib/snyk.sh
+. "$DIR/../lib/snyk.sh"
+
+# set up the environment
+configure_plugin
+
+#run the scan
+snyk_scan
+
