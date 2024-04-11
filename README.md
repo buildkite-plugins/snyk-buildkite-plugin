@@ -40,6 +40,7 @@ Here are a few examples of using the plugin to scan within your Buildkite pipeli
 ```yaml
 steps:
   - label: "🔎 Scanning with Snyk"
+    command: "test.sh"
     plugins:
       - snyk#v0.1.0:
           scan: 'oss'
@@ -52,6 +53,7 @@ steps:
 ```yaml
 steps:
   - label: "🔎 Scanning code with Snyk"
+    command: "test.sh"
     plugins:
       - snyk#v0.1.0:
           scan: 'code'
@@ -64,6 +66,7 @@ Scanning a docker container image by image name and tag:
 ```yaml
 steps:
   - label: "🔎 Scanning container image with Snyk"
+    command: "build.sh"
     plugins:
       - snyk#v0.1.0:
           scan: 'container'
@@ -77,6 +80,7 @@ Block a build when a vulnerability is detected:
 ```yaml
 steps:
   - label: "🔎 Blocking snyk scan"
+    command: "test.sh"
     plugins:
       - snyk#v0.1.0:
           scan: 'oss'
@@ -96,10 +100,6 @@ You can use the [bk cli](https://github.com/buildkite/cli) to run the [pipeline]
 ```bash
 bk local run
 ```
-
-## 👩‍💻 Contributing
-
-Your policy on how to contribute to the plugin!
 
 ## 📜 License
 
