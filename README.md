@@ -1,9 +1,11 @@
+# Snyk Buildkite Plugin [![Build status](https://badge.buildkite.com/1d5cd674308d9572db45ebcb52aec5a32fd38b6763c3705b42.svg)](https://buildkite.com/buildkite/plugins-snyk)
 
-[![Build status](https://badge.buildkite.com/1d5cd674308d9572db45ebcb52aec5a32fd38b6763c3705b42.svg)](https://buildkite.com/buildkite/plugins-snyk)
+A Buildkite plugin that runs [Snyk](https://snyk.io) tests in your Buildkite pipelines. The plugin requires a few dependencies install on your agents in order to function:
 
-# Snyk Buildkite Plugin
+[Snyk CLI](https://docs.snyk.io/snyk-cli/getting-started-with-the-snyk-cli)
+[snyk-to-html](https://docs.snyk.io/snyk-cli/scan-and-maintain-projects-using-the-cli/cli-tools/snyk-to-html)
 
-A Buildkite plugin that runs [Snyk](https://snyk.io) tests in your Buildkite pipelines
+Refer to the documentation for these tools to ensure they are installed on your agents before running the plugin. If you are using the [Buildkite Elastic CI Stack for AWS](https://buildkite.com/docs/agent/v3/elastic-ci-aws/elastic-ci-stack-overview), you will need to customise the [bootstrap script](https://buildkite.com/docs/agent/v3/elastic-ci-aws/elastic-ci-stack-overview) used by the stack.
 
 ## Options
 
@@ -27,7 +29,7 @@ Your Snyk Organization slug, sets `SNYK_CFG_ORG`.
 The image and tag (example: `alpine:latest`) to pass to the container scan tool.
 
 #### `annotate` (bool)
-Annotate the build according to the scan results, default: FALSE
+Annotate the build according to the scan results. (default: FALSE)
 
 #### `block` (bool)
 Optionally block the build on vulnerability detection
@@ -47,7 +49,7 @@ steps:
 
 ```
 
-## And with other options as well
+### And with other options as well
 
 ```yaml
 steps:
@@ -96,10 +98,6 @@ You can use the [bk cli](https://github.com/buildkite/cli) to run the [pipeline]
 ```bash
 bk local run
 ```
-
-## 👩‍💻 Contributing
-
-Your policy on how to contribute to the plugin!
 
 ## 📜 License
 

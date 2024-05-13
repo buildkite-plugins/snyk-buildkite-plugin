@@ -5,6 +5,7 @@ public: true
 requirements:
   - bash
   - snyk
+  - snyk-to-html
 configuration:
   properties:
     token-env:
