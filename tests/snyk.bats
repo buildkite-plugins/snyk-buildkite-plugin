@@ -25,7 +25,7 @@ setup() {
   unset BUILDKITE_PLUGIN_SNYK_TOKEN_ENV
   unset SNYK_TOKEN
 
-  run "$PWD"/hooks/command
+  run "$PWD"/hooks/post-command
 
   assert_failure
   assert_output --partial 'No token set'
@@ -50,7 +50,7 @@ setup() {
   "artifact upload ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-oss.html : exit 0" \
   "annotate \* \* \* \* \* : exit 0"
 
-  run "$PWD"/hooks/command
+  run "$PWD"/hooks/post-command
 
   assert_success
   assert_output --partial 'Scanning OSS'
@@ -66,7 +66,7 @@ setup() {
   stub snyk \
    "code test --json-file-output=${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-code.json : echo 'Scanning Code'"
 
-  run "$PWD"/hooks/command
+  run "$PWD"/hooks/post-command
 
   assert_success
   assert_output --partial 'Scanning Code'
@@ -87,7 +87,7 @@ setup() {
   "artifact upload ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-container.html : exit 0" \
   "annotate \* \* \* \* \* : exit 0"
 
-  run "$PWD"/hooks/command
+  run "$PWD"/hooks/post-command
 
   assert_success
   assert_output --partial 'Scanning Container llama'
