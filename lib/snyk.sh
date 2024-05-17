@@ -3,6 +3,8 @@
 set -euo pipefail
 
 function configure_plugin() {
+    
+    # PLUGIN_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)/.."
     # Set token for the SNYK cli (either Service Account or User token)
     if [ -z "${BUILDKITE_PLUGIN_SNYK_TOKEN_ENV:-}" ]; then
        export SNYK_TOKEN="${SNYK_TOKEN?No token set}"
@@ -38,6 +40,7 @@ function configure_plugin() {
     fi
 }
 
+# Snyk Scans based on the provided scan tool
 function snyk_scan() {
     case "${scan_tool}" in
         oss)
@@ -59,11 +62,15 @@ function snyk_oss_test () {
 
     echo "--- Running Snyk OSS scan"
 
+    # capture the exit code to use for formatting the annotation later (https://docs.snyk.io/snyk-cli/commands/code-test#exit-codes)
+    # and checking if we need to block the build
+
     exit_code=0
     snyk test --json-file-output="${json_output_file}" || exit_code=$?
 
     upload_results "${json_output_file}" "oss"
 
+    # Only create the annotation if annotate: true is added to the plugin config, default is "false"
     if [[ "${annotate}" == "true" ]]; then
        annotate_build "${exit_code}" "oss"
     fi
@@ -73,14 +80,17 @@ function snyk_oss_test () {
     fi
 }
 
+# Runs Snyk Code tests
 function snyk_code_test () {
     json_output_file="${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-code.json"
 
     echo "--- Running Snyk Code scan"
 
+    # capture the exit code to use for formatting the annotation later (https://docs.snyk.io/snyk-cli/commands/code-test#exit-codes)
     exit_code=0
     snyk code test --json-file-output="${json_output_file}" || exit_code=$?
 
+    # because snyk code doesn't always create a json file, we need to check if one exists
     if [ -f "${json_output_file}" ]; then
         upload_results "${json_output_file}" "code"
 
@@ -94,6 +104,8 @@ function snyk_code_test () {
     fi
 }
 
+# Run container test against a container image built as part of the job
+# TODO: implement container tests entirely
 function snyk_container_test() {
     json_output_file="${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-container.json"
     echo "--- Running Snyk Container scan"
@@ -102,7 +114,8 @@ function snyk_container_test() {
         snyk container test "${CONTAINER_IMAGE:-}" --json-file-output="${json_output_file}" || exit_code=$?
 
         upload_results "${json_output_file}" "container"
-
+        
+        # Only create the annotation if annotate: true is added to the plugin config, default is "false"
         if [[ "${annotate}" == "true" ]]; then
             annotate_build "${exit_code}" "container"
         fi
@@ -116,6 +129,7 @@ function snyk_container_test() {
     fi
 }
 
+# Blocks the build if BUILDKITE_PLUGIN_SNYK_BLOCK=true and vulnerabilities are detected
 function block_build() {
     echo "Snyk detected vulnerabilities in the test, blocking build"
 
@@ -131,12 +145,14 @@ function upload_results() {
 
     html_artifact="${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-${ctx}.html"
 
+    # convert the json results to an HTML file
     snyk-to-html -i "${json_result_file}" -o "${html_artifact}"
 
     echo "--- Uploading artifacts"
     buildkite-agent artifact upload "${html_artifact}"
 }
 
+# format the output into an annotation with a link to the full report as an artifact
 function annotate_build() {
     exit_code=$1
     ctx=$2

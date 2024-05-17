@@ -1,15 +1,15 @@
 # Snyk Buildkite Plugin [![Build status](https://badge.buildkite.com/1d5cd674308d9572db45ebcb52aec5a32fd38b6763c3705b42.svg)](https://buildkite.com/buildkite/plugins-snyk)
 
-A Buildkite plugin that runs [Snyk](https://snyk.io) tests in your Buildkite pipelines. The plugin requires a few dependencies installed on your agents in order to function:
+A Buildkite plugin that runs [Snyk](https://snyk.io) tests in your Buildkite pipelines. The plugin requires a few dependencies install on your agents in order to function:
 
 [Snyk CLI](https://docs.snyk.io/snyk-cli/getting-started-with-the-snyk-cli)
 [snyk-to-html](https://docs.snyk.io/snyk-cli/scan-and-maintain-projects-using-the-cli/cli-tools/snyk-to-html)
 
-Refer to the documentation for these tools to ensure they are installed on your agents before running the plugin. If you are using the [Buildkite Elastic CI Stack for AWS](https://buildkite.com/docs/agent/v3/elastic-ci-aws/elastic-ci-stack-overview), you will need to customize the [bootstrap script](https://buildkite.com/docs/agent/v3/elastic-ci-aws/elastic-ci-stack-overview) used by the stack.
+Refer to the documentation for these tools to ensure they are installed on your agents before running the plugin. If you are using the [Buildkite Elastic CI Stack for AWS](https://buildkite.com/docs/agent/v3/elastic-ci-aws/elastic-ci-stack-overview), you will need to customise the [bootstrap script](https://buildkite.com/docs/agent/v3/elastic-ci-aws/elastic-ci-stack-overview) used by the stack.
 
 ## Options
 
-These are all the options available to configure this plugin's behavior.
+These are all the options available to configure this plugin's behaviour.
 
 ### Required
 
