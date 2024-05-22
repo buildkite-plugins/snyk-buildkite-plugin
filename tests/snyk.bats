@@ -20,6 +20,11 @@ setup() {
   export BUILDKITE_PLUGIN_SNYK_ANNOTATE=false
 }
 
+teardown() {
+  unstub snyk || true
+  unstub snyk-to-html || true
+  unstub buildkite-agent || true
+}
 
 @test "missing snyk token causes plugin to fail" {
   unset BUILDKITE_PLUGIN_SNYK_TOKEN_ENV
@@ -31,11 +36,6 @@ setup() {
   assert_output --partial 'No token set'
   refute_output --partial 'Running plugin'
 }
-
-@test "setting token env attribute sets snyk token" {
-
-}
-
 
 @test "oss option runs Snyk OSS scan" {
   BUILDKITE_PLUGIN_SNYK_SCAN='oss'
@@ -54,10 +54,6 @@ setup() {
 
   assert_success
   assert_output --partial 'Scanning OSS'
-
-  unstub snyk
-  unstub snyk-to-html
-  unstub buildkite-agent
 }
 
 @test "code option runs Snyk code scan" {
@@ -70,8 +66,6 @@ setup() {
 
   assert_success
   assert_output --partial 'Scanning Code'
-
-  unstub snyk
 }
 
 @test "container option runs Snyk container scan" {
@@ -91,8 +85,46 @@ setup() {
 
   assert_success
   assert_output --partial 'Scanning Container llama'
+}
 
-  unstub snyk
-  unstub snyk-to-html
-  unstub buildkite-agent
+@test "snyk plugin does not annotate when annotate is false" {
+  export BUILDKITE_PLUGIN_SNYK_ANNOTATE=false
+  BUILDKITE_PLUGIN_SNYK_SCAN='oss'
+
+  stub snyk \
+   "test --json-file-output=${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-oss.json : echo 'Scanning OSS'"
+
+  stub snyk-to-html \
+  "-i ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-oss.json -o ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-oss.html : echo 'created artifact'"
+
+  stub buildkite-agent \
+  "artifact upload ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-oss.html : exit 0" \
+  "annotate \* \* \* \* \* : exit 0"
+
+  run "$PWD"/hooks/post-command
+
+  assert_success
+  assert_output --partial 'Scanning OSS'
+  refute_output --partial 'annotate'
+}
+
+@test "snyk plugin annotates when annotate is true" {
+  export BUILDKITE_PLUGIN_SNYK_ANNOTATE=true
+  BUILDKITE_PLUGIN_SNYK_SCAN='oss'
+
+  stub snyk \
+   "test --json-file-output=${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-oss.json : echo 'Scanning OSS'"
+
+  stub snyk-to-html \
+  "-i ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-snyk-oss.json -o ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-oss.html : echo 'created artifact'"
+
+  stub buildkite-agent \
+  "artifact upload ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BUILD_NUMBER}-oss.html : exit 0" \
+  "annotate \* \* \* \* \* : echo 'Annotation created'"
+
+  run "$PWD"/hooks/post-command
+
+  assert_success
+  assert_output --partial 'Scanning OSS'
+  assert_output --partial 'Annotation created'
 }

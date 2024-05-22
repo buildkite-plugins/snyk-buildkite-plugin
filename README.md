@@ -19,7 +19,7 @@ The type of scan that the plugin will perform. Currently supported options are `
 
 ### Optional
 
-#### `token-env` (string)
+#### `token-env` (string)
 The environment variable the plugin will reference to set `SNYK_TOKEN`. (default: `SNYK_TOKEN`)
 
 #### `org` (string)
@@ -29,15 +29,14 @@ Your Snyk Organization slug, sets `SNYK_CFG_ORG`.
 The image and tag (example: `alpine:latest`) to pass to the container scan tool.
 
 #### `annotate` (bool)
-Annotate the build according to the scan results. (default: FALSE)
+Annotate the build according to the scan results. If set to `false`, no annotation will be created even if vulnerabilities are detected. (default: `false`)
 
 #### `block` (bool)
-Optionally block the build on vulnerability detection
-
+Optionally block the build on vulnerability detection.
 
 ## Examples
 
-Here are a few examples of using the plugin to scan within your Buildkite pipeline
+Here are a few examples of using the plugin to scan within your Buildkite pipeline:
 
 ```yaml
 steps:
@@ -47,10 +46,9 @@ steps:
       - snyk#v0.1.0:
           scan: 'oss'
           annotate: true
-
 ```
 
-### And with other options as well
+### And with other options as well:
 
 ```yaml
 steps:
@@ -61,7 +59,6 @@ steps:
           scan: 'code'
           annotate: true
 ```
-
 
 Scanning a docker container image by image name and tag:
 
@@ -74,7 +71,6 @@ steps:
           scan: 'container'
           annotate: true
           image: 'alpine:latest'
-
 ```
 
 Block a build when a vulnerability is detected:
