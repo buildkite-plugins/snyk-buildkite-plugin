@@ -43,7 +43,7 @@ steps:
   - label: "🔎 Scanning with Snyk"
     command: "test.sh"
     plugins:
-      - snyk#v0.1.0:
+      - snyk#v0.2.0:
           scan: 'oss'
           annotate: true
 ```
@@ -55,7 +55,7 @@ steps:
   - label: "🔎 Scanning code with Snyk"
     command: "test.sh"
     plugins:
-      - snyk#v0.1.0:
+      - snyk#v0.2.0:
           scan: 'code'
           annotate: true
 ```
@@ -67,7 +67,7 @@ steps:
   - label: "🔎 Scanning container image with Snyk"
     command: "build.sh"
     plugins:
-      - snyk#v0.1.0:
+      - snyk#v0.2.0:
           scan: 'container'
           annotate: true
           image: 'alpine:latest'
@@ -80,7 +80,7 @@ steps:
   - label: "🔎 Blocking snyk scan"
     command: "test.sh"
     plugins:
-      - snyk#v0.1.0:
+      - snyk#v0.2.0:
           scan: 'oss'
           annotate: true
           block: true
